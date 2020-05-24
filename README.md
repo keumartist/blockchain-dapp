@@ -38,6 +38,25 @@ CryptoZombies 정리
      // ...이는 임시 변경한 내용을 블록체인 저장소에 저장하고자 하는 경우이다.
     }
   ```  
+* modifier : 함수 제어자
+  * 함수 정의부 끝에 해당 함수의 작동 방식을 바꾸도록 제어자의 이름을 붙임
+  ```solidity
+  modifier onlyOwner() {
+  require(msg.sender == owner);
+  _;
+  }
+  
+  contract MyContract is Ownable {
+   event LaughManiacally(string laughter);
+
+   function likeABoss() external onlyOwner {
+     LaughManiacally("Muahahahaha");
+   }
+  }
+  ```
+* 시간 단위(Time units)
+  * now : 유닉스 타임스탬프 (since 1970.01.01)
+  * seconds, minutes, hours, days, weeks, years 등 단위 존재. 이들은 그에 해당하는 길이 만큼의 초 단위 uint 숫자로 변환된다. 즉 1 minutes는 60, 1 hours는 3600(60초 x 60 분), 1 days는 86400
   
 ### Smart Contract의 특징
 * 컨트랙트의 불변성
@@ -46,3 +65,8 @@ CryptoZombies 정리
 * 외부 의존성
   * 만약 내 컨트랙트에 넣은 다른 컨트랙트의 주소가 있는데, 그 컨트랙트의 문제가 발생해도 나의 컨트랙트 코드를 수정할 방법이 없다.
   * 그래서 내 DApp의 코드를 일부 수정할 수 있도록 짜는게 중요하다.
+* 가스
+  * 이더리움 DApp이 사용하는 연료
+  * 솔리디티에서는 사용자들이 DApp의 함수를 실행할 때마다 '가스'라고 불리는 화폐를 지불한다. 사용자는 이더(ETH, 이더리움의 화폐)를 이용해서 가스를 사기 때문에, DApp 함수를 실행하려면 사용자들은 ETH를 소모해야만 한다
+  * 함수를 실행하는 데에 얼마나 많은 가스가 필요한지는 그 함수의 로직(논리 구조)이 얼마나 복잡한지에 따라 달라진다. 각각의 연산은 소모되는 가스 비용(gas cost)이 있고, 그 연산을 수행하는 데에 소모되는 컴퓨팅 자원의 양이 이 비용을 결정한다. 함수의 전체 가스 비용은 그 함수를 구성하는 개별 연산들의 가스 비용을 모두 합친 것과 같다.
+
