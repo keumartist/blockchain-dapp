@@ -1,5 +1,5 @@
 ## DApp 만들기
-CryptoZombies 정리
+CryptoZombies 정리 https://cryptozombies.io/ko/course
 
 ### Solidity 기본
 * view : 함수가 데이터를 보기만 하고 변경하지 않는다는 뜻
@@ -42,16 +42,16 @@ CryptoZombies 정리
   * 함수 정의부 끝에 해당 함수의 작동 방식을 바꾸도록 제어자의 이름을 붙임
   ```solidity
   modifier onlyOwner() {
-  require(msg.sender == owner);
-  _;
+    require(msg.sender == owner);
+    _;
   }
   
   contract MyContract is Ownable {
-   event LaughManiacally(string laughter);
+    event LaughManiacally(string laughter);
 
-   function likeABoss() external onlyOwner {
-     LaughManiacally("Muahahahaha");
-   }
+    function likeABoss() external onlyOwner {
+      LaughManiacally("Muahahahaha");
+    }
   }
   ```
 * 시간 단위(Time units)
@@ -70,3 +70,39 @@ CryptoZombies 정리
   * 솔리디티에서는 사용자들이 DApp의 함수를 실행할 때마다 '가스'라고 불리는 화폐를 지불한다. 사용자는 이더(ETH, 이더리움의 화폐)를 이용해서 가스를 사기 때문에, DApp 함수를 실행하려면 사용자들은 ETH를 소모해야만 한다
   * 함수를 실행하는 데에 얼마나 많은 가스가 필요한지는 그 함수의 로직(논리 구조)이 얼마나 복잡한지에 따라 달라진다. 각각의 연산은 소모되는 가스 비용(gas cost)이 있고, 그 연산을 수행하는 데에 소모되는 컴퓨팅 자원의 양이 이 비용을 결정한다. 함수의 전체 가스 비용은 그 함수를 구성하는 개별 연산들의 가스 비용을 모두 합친 것과 같다.
 
+### Web3.js
+* 이더리움 네트워크는 노드로 구성되어 있고, 각 노드는 블록체인의 복사본을 가지고 있다. 이 노드들 중 하나에 쿼리를 보내 다음 내용을 전달해야 한다. 1) 
+  1. 스마트 컨트랙트의 주소
+  2. 실행하고자 하는 함수
+  3. 그 함수에 전달하고자 하는 변수들
+* 이더리움 노드들은 JSON-RPC라고 불리는 언어로만 소통할 수 있다.
+* Web3.js는 자바스크팁트 인터페이스를 통해 이더리움과 노드들과 상호작용을 할 수 있게 한다. 따라서 JSON-RPC를 직접 다루지 않아도 된다.
+* 메타마스크는 사용자들이 이더리움 계정과 개인 키를 안전하게 관리할 수 있게 해주는 크롬과 파이어폭스의 브라우저 확장 프로그램으로, 해당 계정들을 써서 Web3.js를 사용하는 웹사이트들과 상호작용을 할 수 있도록 해준다.
+* 메타마스크는 web3라는 전역 자바스크립트 객체를 통해 브라우저에 Web3 프로바이더를 주입한다. 따라서 앱에서 web3가 존재하는지 확인하고, 만약 존재한다면 web3.currentProvider를 프로바이더로서 사용하면 된다.
+* 메타마스크 탬플릿 코드
+  ```javascript
+  indow.addEventListener('load', function() {
+
+    // Web3가 브라우저에 주입되었는지 확인(Mist/MetaMask)
+    if (typeof web3 !== 'undefined') {
+      // Mist/MetaMask의 프로바이더 사용
+      web3js = new Web3(web3.currentProvider);
+    } else {
+      // 사용자가 Metamask를 설치하지 않은 경우에 대해 처리
+      // 사용자들에게 Metamask를 설치하라는 등의 메세지를 보여줄 것
+    }
+
+    // 앱 시작
+    startApp()
+  })
+  
+* ABI
+  * Application Binary Interface. 기본적으로 JSON 형태로 컨트랙트의 메소드를 표현하는 인터페이스. 컨트랙트가 이해할 수 있도록 하려면 Web3.js가 어떤 형태로 함수 호출을 해야 하는지 알려준다.
+* 스마트 컨트랙트의 함수를 호출하기 위한 Web3.js 두 가지 메소드
+  * call : view 함수와 pure 함수에 사용. 로컬 노드에서만 실행하고, 블록체인 트랜잭션을 남기지 않는다.
+  * send : view, pure가 아닌 모든 함수엥 사용. 트랜잭션을 send하는 것은 사용자에게 가스를 지불하도록 하고, 메타마스크에서 트랜잭션에 서명하라고 창을 띄운다. Web3 프로바이더로 메타마스크를 사용할 때, send()를 호출하면 자동으로 이 모든 것이 이루어진다.
+
+* 메타마스크에 의해 주입되어 있는 web3 변수에 현재 활성화된 계정이 무엇인지 다음처럼 확인할 수 있다
+  ```javascript
+  var userAccount = web3.eth.accounts[0]
+  ```
